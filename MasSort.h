@@ -1,19 +1,14 @@
-﻿/*
+﻿#pragma once
+/*
 * MasSort.h
 *
-*
-* http://www.mmatsubara.com/developer/sortCpp/
-*
-* Copyright (c) 2017 matsubara masakazu
+* Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
-* https://github.com/m-matsubara/sortCpp/blob/master/LICENSE.txt
+* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
-#pragma once
-#include <Windows.h>
-#include "stdafx.h"
+#include <vector>
 
-#include <emmintrin.h>
 #include "InsertionSort.h"
 
 template <class RAI> inline static void MoveData(RAI Dest, RAI Src, size_t sztCount)

@@ -1,48 +1,16 @@
 ﻿#pragma once
-#pragma once
-
-#include <Windows.h>
-#include "stdafx.h"
-
-#include <emmintrin.h>
-#include <vector>
-#include "InsertionSort.h"
-#include "BinInsertionSort.h"
-
 /*
-template <class RAIv> inline static void CopyData(RAIv *Dest, RAIv *Src)
-{
-	byte	*pDest = (byte *)Dest;
-	byte	*pSrc = (byte *)Src;
-	size_t	sztCopyLength = sizeof(*Dest);
-
-	while (sztCopyLength >= 16) {
-		_mm_storeu_si128((__m128i*) pDest, _mm_loadu_si128((__m128i*) pSrc));
-		pDest += 16;
-		pSrc += 16;
-		sztCopyLength -= 16;
-	}
-	if (sztCopyLength >= 8) {
-		_mm_storel_epi64((__m128i*) pDest, _mm_loadl_epi64((__m128i*) pSrc));
-		pDest += 8;
-		pSrc += 8;
-		sztCopyLength -= 8;
-	}
-	if (sztCopyLength >= 4) {
-		*((DWORD *)pDest) = *((DWORD *)pSrc);
-		pDest += 4;
-		pSrc += 4;
-		sztCopyLength -= 4;
-	}
-	while (sztCopyLength--)
-	{
-		byte byteData = *pDest;
-		*pDest++ = *pSrc;
-		*pSrc++ = byteData;
-	}
-}
+* MmsSort.h
+*
+* Copyright (c) 2017 masakazu matsubara
+* Released under the MIT license
+* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
+#include <vector>
+
+#include "InsertionSort.h"
+#include "BinInsertionSort.h"
 
 template <class RAI, class PR> void mmsSort(RAI from, RAI to, RAI works, PR pred)
 {

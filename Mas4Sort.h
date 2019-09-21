@@ -1,21 +1,15 @@
-﻿/*
+﻿#pragma once
+/*
 * Mas4Sort.h
 *
-*
-* http://www.mmatsubara.com/developer/sortCpp/
-*
-* Copyright (c) 2017 matsubara masakazu
+* Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
-* https://github.com/m-matsubara/sortCpp/blob/master/LICENSE.txt
+* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
-#pragma once
-#include <Windows.h>
-#include <iostream>
-#include "stdafx.h"
+#include <vector>
 
 #include "InsertionSort.h"
-
 
 namespace mmlib {
 
@@ -971,7 +965,7 @@ namespace mmlib {
 	* mas4sort (4-way merge sort)
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI outi, PR pred, boolean sourceIsEnable) {
+	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI outi, PR pred, bool sourceIsEnable) {
 		const size_t range = std::distance(from, to);
 		//	ソート対象配列サイズが一定数未満のときは特別扱い
 		if (range < 5) {

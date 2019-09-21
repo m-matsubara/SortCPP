@@ -1,15 +1,13 @@
-﻿/*
+﻿#pragma once
+/*
 * SortBenchmark.h
 *
-*
-* http://www.mmatsubara.com/developer/sortCpp/
-*
-* Copyright (c) 2017 matsubara masakazu
+* Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
-* https://github.com/m-matsubara/sortCpp/blob/master/LICENSE.txt
+* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
-#pragma once
+#include <vector>
 
 #include "SortItem.h"
 #include "SortBenchmarkSpec.h"

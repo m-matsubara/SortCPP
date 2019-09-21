@@ -1,18 +1,18 @@
 ﻿/*
 * MasSort.cpp
 *
-*
-* http://www.mmatsubara.com/developer/sortCpp/
-*
-* Copyright (c) 2017 matsubara masakazu
+* Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
-* https://github.com/m-matsubara/sortCpp/blob/master/LICENSE.txt
+* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
-#include "stdafx.h"
+#include "MasSort.h"
+
+#include <vector>
+#include <string>
+
 #include "SortBenchmark.h"
 #include "SortBenchmarkSpec.h"
-#include "MasSort.h"
 
 class MmSortBenchmark : public SortBenchmark {
 	inline void sort(std::vector<SortItem> &array) {

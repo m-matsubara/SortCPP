@@ -1,4 +1,11 @@
 ﻿#pragma once
+/*
+* BinInsertionSort.h
+*
+* Copyright (c) 2017 masakazu matsubara
+* Released under the MIT license
+* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
+*/
 
 template <class RAI, class PR> inline void binInsertionSort(RAI from, RAI to, PR pred)
 {
