@@ -2,7 +2,7 @@
 Sort Algorithm (C++)
 
 
-The following algorithm is included. Benchmarks that can compare speed with "std::sort()" and "std::stable_sort()" are included.
+This C++ library includes 3 sorting algorithms and you can see benchmarkings by running std::sort() and std::stable_sort().
 
 ## Mas4Sort.h
   4-way merge sort
@@ -16,11 +16,6 @@ The following algorithm is included. Benchmarks that can compare speed with "std
   Three lanes (sub arrays) are controlled by one variable.
   Many "if statements" that control three lanes. Hentai merge sort.
   Use work memory of the same size as the target array.
-
-## MMergeSort.h
-  Merge sort that transfers two arrays alternately.
-  Use work memory of the same size as the target array.
-  Well-known algorithm.
 
 ## mmSort.h
   Quicksort with improved "Median of 5 Quicksort" and reduced number of comparisons.
