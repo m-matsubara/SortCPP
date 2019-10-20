@@ -26,7 +26,7 @@ public:
 	int key;
 	std::string keyString;
 	int originalOrder;
-
+#ifdef FILLER_ITEMS
 	int filler1;
 	int filler2;
 	int filler3;
@@ -41,8 +41,9 @@ public:
 	int filler12;
 	int filler13;
 	int filler14;
-
+#endif
 	SortItem() : key(0), keyString(""), originalOrder(0) {
+#ifdef FILLER_ITEMS
 		filler1 = 0;
 		filler2 = 0;
 		filler3 = 0;
@@ -57,6 +58,7 @@ public:
 		filler12 = 0;
 		filler13 = 0;
 		filler14 = 0;
+#endif
 		constructorCount++;
 	}
 #ifdef CUSTOM_CONSTRUCTOR
