@@ -11,7 +11,7 @@ enum sort_key_type { skt_int, skt_str };
 
 
 // 配列サイズ
-#define ARRAY_SIZE 100
+#define ARRAY_SIZE 10000000
 // ソートの繰り返し回数
 #define TIMES 5
 // 配列の初期状態（ランダム・昇順・降順…）
@@ -20,6 +20,6 @@ enum sort_key_type { skt_int, skt_str };
 #define SORT_KEY_MODE skt_int
 
 // コピーコンストラクタ・ムーブコンストラクタの呼び出し回数を数えるか
-#define CUSTOM_CONSTRUCTOR
+//#define CUSTOM_CONSTRUCTOR
 // FILLER1～ の項目をクラスに追加するか
 #define FILLER_ITEMS
