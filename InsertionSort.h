@@ -11,7 +11,7 @@
 #include <functional>
 
 
-// 挿入ソート
+// Insertion sort
 template <class RAI, class PR> inline void insertionSort(RAI from, RAI to, PR pred)
 {
 	for (RAI ite = from + 1; ite < to; ite++) {

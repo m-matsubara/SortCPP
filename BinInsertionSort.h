@@ -7,6 +7,7 @@
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
+// Binary insertion srt
 template <class RAI, class PR> inline void binInsertionSort(RAI from, RAI to, PR pred)
 {
 	typedef typename std::iterator_traits<RAI>::value_type BIv;

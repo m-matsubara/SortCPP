@@ -13,38 +13,6 @@
 
 template <class RAI> inline static void MoveData(RAI Dest, RAI Src, size_t sztCount)
 {
-/*
-	byte	*pDest = (byte *)&(*Dest);
-	byte	*pSrc = (byte *)&(*Src);
-	size_t	sztCopyLength = sizeof(*Dest) * sztCount;
-
-
-	while (sztCopyLength >= 16) {
-		_mm_storeu_si128((__m128i*) pDest, _mm_loadu_si128((__m128i*) pSrc));
-		pDest += 16;
-		pSrc += 16;
-		sztCopyLength -= 16;
-	}
-	if (sztCopyLength >= 8) {
-		_mm_storel_epi64((__m128i*) pDest, _mm_loadl_epi64((__m128i*) pSrc));
-		pDest += 8; 
-		pSrc += 8; 
-		sztCopyLength -= 8;
-	}
-
-	if (sztCopyLength >= 4) {
-		*((DWORD *)pDest) = *((DWORD *)pSrc);
-		pDest += 4; 
-		pSrc += 4; 
-		sztCopyLength -= 4;
-	}
-	while (sztCopyLength--)
-	{
-		byte byteData = *pDest;
-		*pDest++ = *pSrc;
-		*pSrc++ = byteData;
-	}
-*/
 	for (size_t idx = 0; idx < sztCount; idx++) {
 		*Dest++ = std::move(*Src);
 		std::advance(Src, 1);
