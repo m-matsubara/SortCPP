@@ -16,7 +16,7 @@
 
 class MmSortBenchmark : public SortBenchmark {
 	inline void sort(std::vector<SortItem> &array) {
-		mmsSort(array.begin(), array.end());
+		mmlib::mmsSort(array.begin(), array.end());
 	}
 	inline std::string getAlgorithmName(void) { return "mmsSort"; }
 	inline bool isStable(void) { return true; }
