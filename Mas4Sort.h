@@ -17,7 +17,7 @@ namespace mmlib {
 	* 4-way merge
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _mas4Merge(RAI pos1, RAI pos2, RAI pos3, RAI pos4, RAI to, OI outi, PR pred) {
+	template <class RAI, class OI, class PR> void _mas4Merge(RAI pos1, RAI pos2, RAI pos3, RAI pos4, RAI pos5, OI posOut, PR pred) {
 
 		/*
 		* 各レーンをその先頭値でソートし、ソート結果を int の変数１つで管理する
@@ -136,13 +136,13 @@ namespace mmlib {
 		const auto p1to = pos2;
 		const auto p2to = pos3;
 		const auto p3to = pos4;
-		const RAI  p4to = to;
+		const RAI  p4to = pos5;
 
 		// ４レーンのループ
-		for (;; advance(outi, 1)) {
+		for (;; advance(posOut, 1)) {
 			if (state < 0x2000) {	//	state : [0x1234, 0x1432]
 				// レーン１から値を取得
-				*outi = std::move(*pos1);
+				*posOut = std::move(*pos1);
 				advance(pos1, 1);
 				// レーン１が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos1 >= p1to)
@@ -254,7 +254,7 @@ namespace mmlib {
 			}
 			else if (state < 0x3000) {	//	state : [0x2134, 0x2431]
 				// レーン２から値を取得
-				*outi = std::move(*pos2);
+				*posOut = std::move(*pos2);
 				advance(pos2, 1);
 				// レーン２が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos2 >= p2to)
@@ -366,7 +366,7 @@ namespace mmlib {
 			}
 			else if (state < 0x4000) {	//	state : [0x3124, 0x3421]
 				// レーン３から値を取得
-				*outi = std::move(*pos3);
+				*posOut = std::move(*pos3);
 				advance(pos3, 1);
 				// レーン３が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos3 >= p3to)
@@ -478,7 +478,7 @@ namespace mmlib {
 			}
 			else {	//	state : [0x4123, 0x4321]
 				// レーン４から値を取得
-				*outi = std::move(*pos4);
+				*posOut = std::move(*pos4);
 				advance(pos4, 1);
 				// レーン４が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos4 >= p4to)
@@ -589,15 +589,15 @@ namespace mmlib {
 				}
 			}
 		}
-		advance(outi, 1);
+		advance(posOut, 1);
 		state &= 0xfff;
 
 		// ３レーンのループ
-		for (;; advance(outi, 1)) {
+		for (;; advance(posOut, 1)) {
 			// 以下のif文のネストは、本来なら switch case で処理するべきだが、if のネストのほうが速かったので、このような書き方にしている。
 			if (state < 0x200) {	//	state : [0x123, 0x143]
 				// レーン１から値を取得
-				*outi = std::move(*pos1);
+				*posOut = std::move(*pos1);
 				advance(pos1, 1);
 				// レーン１が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos1 >= p1to)
@@ -655,7 +655,7 @@ namespace mmlib {
 			}
 			else if (state < 0x300) {	//	state : [0x213, 0x243]
 				// レーン２から値を取得
-				*outi = std::move(*pos2);
+				*posOut = std::move(*pos2);
 				advance(pos2, 1);
 				// レーン２が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos2 >= p2to)
@@ -713,7 +713,7 @@ namespace mmlib {
 			}
 			else if (state < 0x400) {	//	state : [0x312, 0x342]
 				// レーン３から値を取得
-				*outi = std::move(*pos3);
+				*posOut = std::move(*pos3);
 				advance(pos3, 1);
 				// レーン３が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos3 >= p3to)
@@ -771,7 +771,7 @@ namespace mmlib {
 			}
 			else {	//	state : [0x412, 0x432]
 				// レーン４から値を取得
-				*outi = std::move(*pos4);
+				*posOut = std::move(*pos4);
 				advance(pos4, 1);
 				// レーン４が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos4 >= p4to)
@@ -828,14 +828,14 @@ namespace mmlib {
 				}
 			}
 		}
-		advance(outi, 1);
+		advance(posOut, 1);
 		state &= 0xff;
 
 		// ２レーンのループ
-		for (;; advance(outi, 1)) {
+		for (;; advance(posOut, 1)) {
 			if (state < 0x20) {	//	state : [0x12, 0x14]
 				// レーン１から値を取得
-				*outi = std::move(*pos1);
+				*posOut = std::move(*pos1);
 				advance(pos1, 1);
 				if (pos1 >= p1to)
 					break;
@@ -862,7 +862,7 @@ namespace mmlib {
 			}
 			else if (state < 0x30) {	//	state : [0x21, 0x24]
 				// レーン２から値を取得
-				*outi = std::move(*pos2);
+				*posOut = std::move(*pos2);
 				advance(pos2, 1);
 				if (pos2 >= p2to)
 					break;
@@ -889,7 +889,7 @@ namespace mmlib {
 			}
 			else if (state < 0x40) {	//	state : [0x31, 0x34]
 				// レーン３から値を取得
-				*outi = std::move(*pos3);
+				*posOut = std::move(*pos3);
 				advance(pos3, 1);
 				if (pos3 >= p3to)
 					break;
@@ -916,7 +916,7 @@ namespace mmlib {
 			}
 			else {	//	state : [0x41, 0x43]
 				// レーン４から値を取得
-				*outi = std::move(*pos4);
+				*posOut = std::move(*pos4);
 				advance(pos4, 1);
 				if (pos4 >= p4to)
 					break;
@@ -942,37 +942,38 @@ namespace mmlib {
 				}
 			}
 		}
-		advance(outi, 1);
+		advance(posOut, 1);
 		state &= 0xf;
 
 		// 残ったワーク領域の各レーンを出力先に格納する
 		switch (state) {
 		case 0x1:
-			std::move(pos1, p1to, outi);
+			std::move(pos1, p1to, posOut);
 			break;
 		case 0x2:
-			std::move(pos2, p2to, outi);
+			std::move(pos2, p2to, posOut);
 			break;
 		case 0x3:
-			std::move(pos3, p3to, outi);
+			std::move(pos3, p3to, posOut);
 			break;
 		case 0x4:
-			std::move(pos4, p4to, outi);
+			std::move(pos4, p4to, posOut);
 		}
 	}
+
 
 	/*
 	* mas4sort (4-way merge sort)
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI outi, PR pred, bool sourceIsEnable) {
+	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI out, PR pred, bool sourceIsEnable) {
 		const size_t range = std::distance(from, to);
 		//	ソート対象配列サイズが一定数未満のときは特別扱い
 		if (range < 5) {
 			if (sourceIsEnable)
-				std::move(from, to, outi);
+				std::move(from, to, out);
 
-			insertionSort(outi, outi + range, pred);
+			insertionSort(out, out + range, pred);
 			return;
 		}
 
@@ -983,11 +984,11 @@ namespace mmlib {
 		const RAI pos3 = pos2 + gap;
 		const RAI pos4 = pos3 + gap;
 
-		const OI opos1 = outi;
+		const OI opos1 = out;
 		const OI opos2 = opos1 + gap;
 		const OI opos3 = opos2 + gap;
 		const OI opos4 = opos3 + gap;
-		const OI outto = outi + range;
+		const OI outto = out + range;
 
 		// 各レーンをソート
 		_mas4Sort(opos1, opos2, pos1, pred, !sourceIsEnable);
@@ -996,7 +997,7 @@ namespace mmlib {
 		_mas4Sort(opos4, outto, pos4, pred, !sourceIsEnable);
 
 		// 各レーンをマージ
-		_mas4Merge(pos1, pos2, pos3, pos4, to, outi, pred);
+		_mas4Merge(pos1, pos2, pos3, pos4, to, out, pred);
 	}
 
 	/*
