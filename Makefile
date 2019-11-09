@@ -1,4 +1,4 @@
-all: MasSort.exe Mas4Sort.exe MmsSort.exe StdSort.exe StdStableSort.exe MergeSort.exe
+all: MasSort.exe Mas4Sort.exe MmsSort.exe StdSort.exe StdStableSort.exe MergeSort.exe MergeSortNR.exe
 
 MasSort.exe: MasSort.o MasSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
 	g++ -Wall -O3 -lstdc++ -o MasSort.exe MasSort.o SortBenchmark.o SortItem.o
@@ -20,6 +20,9 @@ StdStableSort.exe: StdStableSort.o SortBenchmarkSpec.h SortBenchmark.o SortItem.
 
 MergeSort.exe: MergeSort.o MergeSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
 	g++ -Wall -O3 -lstdc++ -o MergeSort.exe MergeSort.o SortBenchmark.o SortItem.o
+
+MergeSortNR.exe: MergeSortNR.o MergeSortNR.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o MergeSortNR.exe MergeSortNR.o SortBenchmark.o SortItem.o
 
 SortBenchmark.o: SortBenchmark.h SortBenchmarkSpec.h SortItem.h
 	g++ -Wall -O3 -lstdc++ -c SortBenchmark.cpp
