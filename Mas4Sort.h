@@ -969,7 +969,7 @@ namespace mmlib {
 	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI out, PR pred, bool sourceIsEnable) {
 		const size_t range = std::distance(from, to);
 		//	ソート対象配列サイズが一定数未満のときは特別扱い
-		if (range < 5) {
+		if (range < 10) {
 			if (sourceIsEnable)
 				std::move(from, to, out);
 
