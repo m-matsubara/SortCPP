@@ -2,6 +2,11 @@
 /*
 * MergeSortNR.h
 *
+* [試験用] 非再起版マージソート
+* 以下の目的の試験用
+*   ・他のアルゴリズムとの比較
+*   ・再帰版マージソートとの比較
+*
 * Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
@@ -73,13 +78,13 @@ namespace mmlib {
 		while (run < range) {
 			size_t halfSize = run;
 			run <<= 1;
-			size_t idx1 = 0;
-			size_t idx2 = run;
-			for (; idx2 < range; idx1 = idx2, idx2 += run) {
-				_merge(from + idx1, from + idx1 + halfSize, from + idx2, work, pred);
+			RAI pos1 = from;
+			RAI pos2 = from + run;
+			for (; pos2 < to; pos1 = pos2, pos2 += run) {
+				_merge(pos1, pos1 + halfSize, pos2, work, pred);
 			}
-			if (idx1 + halfSize < range) {
-				_merge(from + idx1, from + idx1 + halfSize, to, work, pred);
+			if (pos1 + halfSize < to) {
+				_merge(pos1, pos1 + halfSize, to, work, pred);
 			}
 		}
 	}

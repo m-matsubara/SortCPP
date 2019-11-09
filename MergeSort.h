@@ -2,6 +2,11 @@
 /*
 * MergeSort.h
 *
+* [試験用] 再起版マージソート
+* 以下の目的の試験用
+*   ・他のアルゴリズムとの比較
+*   ・非再帰版マージソートとの比較
+*
 * Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
@@ -72,7 +77,7 @@ namespace mmlib {
 		_mergeSort(from, half, work, pred);
 		_mergeSort(half, to,   work, pred);
 
-		// 各レーンをマージ
+		// 二つの副配列をマージ
 		_merge(from, half, to, work, pred);
 	}
 
