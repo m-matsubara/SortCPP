@@ -7,7 +7,7 @@
 *   ・他のアルゴリズムとの比較
 *   ・再帰版マージソートとの比較
 *
-* Copyright (c) 2017 masakazu matsubara
+* Copyright (c) 2019 masakazu matsubara
 * Released under the MIT license
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
