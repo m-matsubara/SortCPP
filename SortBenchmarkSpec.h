@@ -7,7 +7,7 @@
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
 
-enum sort_key_type { skt_int, skt_str };
+enum class SortKeyType { INTEGER, STRING };
 
 
 // 配列サイズ
@@ -17,9 +17,9 @@ enum sort_key_type { skt_int, skt_str };
 // 配列の初期状態（ランダム・昇順・降順…）
 #define ARRAY_TYPE 0	// まだ意味ない
 // ソートキーを整数にするか、文字列にするか
-#define SORT_KEY_MODE skt_int
+#define SORT_KEY_MODE SortKeyType::INTEGER
 
 // コピーコンストラクタ・ムーブコンストラクタの呼び出し回数を数えるか
-//#define CUSTOM_CONSTRUCTOR
+#define CUSTOM_CONSTRUCTOR
 // FILLER1～ の項目をクラスに追加するか
 #define FILLER_ITEMS

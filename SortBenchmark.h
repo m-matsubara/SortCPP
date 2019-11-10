@@ -19,5 +19,5 @@ public:
 	virtual std::string getAlgorithmName(void) = 0;
 	virtual bool isStable(void) = 0;
 
-	void benchmark(size_t arraySize, int arrayType, sort_key_type keyType, size_t times);
+	void benchmark(size_t arraySize, int arrayType, SortKeyType keyType, size_t times);
 };

@@ -79,7 +79,7 @@ public:
 		filler14 = org.filler14;
 		copyConstructorCount++;
 	}
-	SortItem(SortItem &&org) : key(org.key), keyString(org.keyString), originalOrder(org.originalOrder) {
+	SortItem(SortItem &&org) noexcept : key(org.key), keyString(org.keyString), originalOrder(org.originalOrder) {
 		filler1 = org.filler1;
 		filler2 = org.filler2;
 		filler3 = org.filler3;
@@ -105,7 +105,7 @@ public:
 		copyOperatorCount++;
 		return *this;
 	}
-	inline SortItem & operator = (const SortItem&& obj) {
+	inline SortItem & operator = (const SortItem&& obj) noexcept {
 		key = obj.key;
 		keyString = obj.keyString;
 		originalOrder = obj.originalOrder;

@@ -56,7 +56,7 @@ static void validateVector(std::vector<SortItem> &vec, bool stable)
 	SortItem::compareCount = bkCompareCount;
 }
 
-void SortBenchmark::benchmark(size_t arraySize, int arrayType, sort_key_type keyType, size_t times)
+void SortBenchmark::benchmark(size_t arraySize, int arrayType, SortKeyType keyType, size_t times)
 {
 	using namespace std;
 	using std::cout;
@@ -83,7 +83,7 @@ void SortBenchmark::benchmark(size_t arraySize, int arrayType, sort_key_type key
 			}
 
 			string sortKeyTypeStr = "Integer";
-			if (keyType == skt_str) {
+			if (keyType == SortKeyType::STRING) {
 				SortItem::isStringKeyMode = true;
 				sortKeyTypeStr = "String";
 				for (size_t idx = 0; idx < arraySize; idx++) {
@@ -113,11 +113,15 @@ void SortBenchmark::benchmark(size_t arraySize, int arrayType, sort_key_type key
 
 			std::string stable = isStable() ? "stable" : "unstable";
 
-			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << "Random" << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stable << endl;
 #ifdef CUSTOM_CONSTRUCTOR
-			cout << "DefC: \t" << SortItem::constructorCount << endl;
-			cout << "Copy: \t" << SortItem::copyConstructorCount + SortItem::copyOperatorCount << "\t" << SortItem::copyConstructorCount << "\t" << SortItem::copyOperatorCount << endl;
-			cout << "Move: \t" << SortItem::moveConstructorCount + SortItem::moveOperatorCount << "\t" << SortItem::moveConstructorCount << "\t" << SortItem::moveOperatorCount << endl;
+			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << "Random" << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stable 
+				<< "\t" << SortItem::constructorCount
+				<< "\t" << SortItem::moveConstructorCount + SortItem::moveOperatorCount << "\t" << SortItem::moveConstructorCount << "\t" << SortItem::moveOperatorCount
+				<< "\t" << SortItem::copyConstructorCount + SortItem::copyOperatorCount << "\t" << SortItem::copyConstructorCount << "\t" << SortItem::copyOperatorCount
+				<< endl;
+#else
+			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << "Random" << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stable 
+				<< endl;
 #endif
 			//validateVector(vecSortItem.begin(), vecSortItem.end());
 			validateVector(vecSortItem, isStable());
