@@ -22,18 +22,24 @@ namespace mmlib {
 	* merge
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _merge(RAI from, RAI half, RAI to, OI work, PR pred) {
+	template <class RAI, class WV, class PR> void _merge(RAI from, RAI half, RAI to, WV &work, PR pred) {
 		size_t halfRange = half - from;
 
+		// 配列の前半をワーク(ベクター)に移動
+		// （ベクターでインスタンス生成済みの分はイテレータとしてアクセスし、生成済みでない分はpush_back()にてアクセスする（ケチな高速化））
 		RAI pos = from;
-		OI posWork = work;
+		RAI posW = work.begin();
+		size_t idx = 0;
+		size_t size = work.size();
 		while (pos < half) {
-			*posWork = std::move(*pos++);
-			posWork++;
+			if (idx < size)
+				posW[idx++] = std::move(*pos++);
+			else
+				work.push_back(std::move(*pos++));
 		}
 
-		OI pos1 = work;
-		OI pos1to = work + halfRange;
+		RAI pos1 = work.begin();
+		RAI pos1to = pos1 + halfRange;
 		RAI pos2 = half;
 		RAI pos2to = to;
 
@@ -41,17 +47,17 @@ namespace mmlib {
 
 		for (;;) {
 			if (pred(*pos2, *pos1) == false) {
-				*posOut = std::move(*pos1++);
-				posOut++;
+				*posOut++ = std::move(*pos1++);
 				if (pos1 >= pos1to) {
-					std::move(pos2, pos2to, posOut);
+					// 残りの副配列２を移動して終了…要らない
+					//std::move(pos2, pos2to, posOut);
 					return;
 				}
 			}
 			else {
-				*posOut = std::move(*pos2++);
-				posOut++;
+				*posOut++ = std::move(*pos2++);
 				if (pos2 >= pos2to) {
+					// 残りの副配列１を移動して終了
 					std::move(pos1, pos1to, posOut);
 					return;
 				}
@@ -64,7 +70,7 @@ namespace mmlib {
 	* MergeSort
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _mergeSortNR(RAI from, RAI to, OI work, PR pred) {
+	template <class RAI, class WV, class PR> void _mergeSortNR(RAI from, RAI to, WV &work, PR pred) {
 		const size_t range = std::distance(from, to);
 		//	最初はrunサイズ単位でinsertionSortする。
 		size_t run = 10;
@@ -100,15 +106,10 @@ namespace mmlib {
 		}
 
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
-		//size_t workSize = sizeof(RAIv) * (range >> 1);
-		//RAIv* work = (RAIv*)malloc(workSize);
-
 		std::vector<RAIv> work;
 		work.resize(range);
 
-		_mergeSortNR(first, to, work.begin(), pred);
-
-		//free(work);
+		_mergeSortNR(first, to, work, pred);
 	}
 
 	/*

@@ -22,36 +22,44 @@ namespace mmlib {
 	* merge
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _merge(RAI from, RAI half, RAI to, OI work, PR pred) {
+	template <class RAI, class WV, class PR> void _merge(RAI from, RAI half, RAI to, WV &work, PR pred) {
 		size_t halfRange = half - from;
 
+		// 配列の前半をワーク(ベクター)に移動
+		// （ベクターでインスタンス生成済みの分はイテレータとしてアクセスし、生成済みでない分はpush_back()にてアクセスする（ケチな高速化））
 		RAI pos = from;
-		OI posWork = work;
+		RAI posW = work.begin();
+		size_t idx = 0;
+		size_t size = work.size();
 		while (pos < half) {
-			*posWork = std::move(*pos++);
-			posWork++;
+			if (idx < size)
+				posW[idx++] = std::move(*pos++);
+			else
+				work.push_back(std::move(*pos++));
 		}
 
-		OI pos1 = work;
-		OI pos1to = work + halfRange;
-		RAI pos2 = half;
-		RAI pos2to = to;
+		RAI pos1 = work.begin();		// 副配列１（前半）のイテレータ（ワーク配列）
+		RAI pos1to = pos1 + halfRange;	// 副配列１の終わり位置（この位置を含まない）
+		RAI pos2 = half;				// 副配列２（後半）のイテレータ
+		RAI pos2to = to;				// 副配列２の終わり位置（この位置を含まない）
 
-		RAI posOut = from;
+		RAI posOut = from;				// 出力位置
 
 		for (;;) {
 			if (pred(*pos2, *pos1) == false) {
-				*posOut = std::move(*pos1++);
-				posOut++;
+				// *pos1 <= pos2 のケース
+				*posOut++ = std::move(*pos1++);
 				if (pos1 >= pos1to) {
-					std::move(pos2, pos2to, posOut);
+					// 残りの副配列２を移動して終了…要らない
+					//std::move(pos2, pos2to, posOut);
 					return;
 				}
 			}
 			else {
-				*posOut = std::move(*pos2++);
-				posOut++;
+				// *pos1 > pos2 のケース
+				*posOut++ = std::move(*pos2++);
 				if (pos2 >= pos2to) {
+					// 残りの副配列１を移動して終了
 					std::move(pos1, pos1to, posOut);
 					return;
 				}
@@ -64,7 +72,7 @@ namespace mmlib {
 	* MergeSort
 	* internal function
 	*/
-	template <class RAI, class OI, class PR> void _mergeSort(RAI from, RAI to, OI work, PR pred) {
+	template <class RAI, class WV, class PR> void _mergeSort(RAI from, RAI to, WV &work, PR pred) {
 		const size_t range = std::distance(from, to);
 		//	ソート対象配列サイズが一定数未満のときは特別扱い
 		if (range < 10) {
@@ -93,15 +101,10 @@ namespace mmlib {
 
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
 
-		//size_t workSize = sizeof(RAIv) * (range >> 1);
-		//RAIv* work = (RAIv*)malloc(workSize);
-
 		std::vector<RAIv> work;
-		work.resize(range >> 1);
+		work.reserve(range >> 1);
 
-		_mergeSort(first, to, work.begin(), pred);
-
-		//free(work);
+		_mergeSort(first, to, work, pred);
 	}
 
 	/*
