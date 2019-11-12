@@ -7,6 +7,8 @@
 *   ・他のアルゴリズムとの比較
 *   ・再帰版マージソートとの比較
 *
+* 比較目的の実装であることから過度な最適化は施していない。
+*
 * Copyright (c) 2019 masakazu matsubara
 * Released under the MIT license
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
@@ -22,13 +24,17 @@ namespace mmlib {
 	* merge
 	* internal function
 	*/
-	template <class RAI, class WV, class PR> void _merge(RAI from, RAI half, RAI to, WV &work, PR pred) {
+	template <class RAI, class RAIv, class PR> void _merge(RAI from, RAI half, RAI to, std::vector<RAIv>& work, PR pred) {
 		size_t halfRange = half - from;
+#if 1	
+		if (pred(*(half - 1), *half))
+			return;		// マージ済みと判断できるので処理を省略
+#endif
 
 		// 配列の前半をワーク(ベクター)に移動
-		// （ベクターでインスタンス生成済みの分はイテレータとしてアクセスし、生成済みでない分はpush_back()にてアクセスする（ケチな高速化））
-		RAI pos = from;
-		RAI posW = work.begin();
+		// （ベクターでインスタンス生成済みの分はイテレータとしてアクセスし、生成済みでない分はpush_back()にてアクセスする）
+		auto pos = from;
+		auto posW = work.begin();
 		size_t idx = 0;
 		size_t size = work.size();
 		while (pos < half) {
@@ -38,15 +44,16 @@ namespace mmlib {
 				work.push_back(std::move(*pos++));
 		}
 
-		RAI pos1 = work.begin();
-		RAI pos1to = pos1 + halfRange;
-		RAI pos2 = half;
-		RAI pos2to = to;
+		auto pos1 = work.begin();		// 副配列１（前半）のイテレータ（ワーク配列）
+		auto pos1to = pos1 + halfRange;	// 副配列１の終わり位置（この位置を含まない）
+		auto pos2 = half;				// 副配列２（後半）のイテレータ
+		auto pos2to = to;				// 副配列２の終わり位置（この位置を含まない）
 
-		RAI posOut = from;
+		auto posOut = from;				// 出力位置
 
 		for (;;) {
 			if (pred(*pos2, *pos1) == false) {
+				// *pos1 <= pos2 のケース
 				*posOut++ = std::move(*pos1++);
 				if (pos1 >= pos1to) {
 					// 残りの副配列２を移動して終了…要らない
@@ -55,6 +62,7 @@ namespace mmlib {
 				}
 			}
 			else {
+				// *pos1 > pos2 のケース
 				*posOut++ = std::move(*pos2++);
 				if (pos2 >= pos2to) {
 					// 残りの副配列１を移動して終了
@@ -67,10 +75,10 @@ namespace mmlib {
 
 
 	/*
-	* MergeSort
+	* MergeSort (No recursive)
 	* internal function
 	*/
-	template <class RAI, class WV, class PR> void _mergeSortNR(RAI from, RAI to, WV &work, PR pred) {
+	template <class RAI, class RAIv, class PR> void _mergeSortNR(RAI from, RAI to, std::vector<RAIv>& work, PR pred) {
 		const size_t range = std::distance(from, to);
 		//	最初はrunサイズ単位でinsertionSortする。
 		size_t run = 10;
@@ -96,7 +104,7 @@ namespace mmlib {
 	}
 
 	/*
-	* MergeSort
+	* MergeSort (No recursive)
 	*/
 	template <class RAI, class PR> void mergeSortNR(RAI first, RAI to, PR pred) {
 		size_t range = std::distance(first, to);
@@ -106,14 +114,15 @@ namespace mmlib {
 		}
 
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
+
 		std::vector<RAIv> work;
-		work.resize(range);
+		work.reserve(range);
 
 		_mergeSortNR(first, to, work, pred);
 	}
 
 	/*
-	* MergeSort
+	* MergeSort (No recursive)
 	*/
 	template <class RAI> inline void mergeSortNR(RAI first, RAI last) // cmpを省略した時に呼び出す。
 	{
