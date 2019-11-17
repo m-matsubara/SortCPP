@@ -2,6 +2,8 @@
 /*
 * Mas4Sort.h
 *
+* Mas4Sort 2nd Generation implements.
+*
 * Copyright (c) 2017 masakazu matsubara
 * Released under the MIT license
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
