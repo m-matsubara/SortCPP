@@ -4,7 +4,7 @@
 *
 * Mas4Sort 3rd Generation implements.
 *
-* Copyright (c) 2017 masakazu matsubara
+* Copyright (c) 2019 masakazu matsubara
 * Released under the MIT license
 * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
 */
@@ -24,7 +24,7 @@ namespace mmlib {
 		RAI top1, top2, top3, top4;
 		RAI end1, end2, end3, end4;
 
-		// state 変数の初期状態決定
+		// Determining the initial state of the "state" variable
 		if (pred(*pos2, *pos1) == false) {						// *pos1 <= *pos2
 			// array[p1] <= array[p2]
 			if (pred(*pos3, *pos2) == false) {					// *pos2 <= *pos3
@@ -242,11 +242,12 @@ namespace mmlib {
 			}
 		}
 
+		// Loop of 4 lanes
 		for (;; advance(posOut, 1)) {
 			*posOut = std::move(*top1);
 			advance(top1, 1);
-			// レーン１が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 			if (top1 >= end1) {
+				// to Loop of 3 lanes
 				top1 = top2; end1 = end2;
 				top2 = top3; end2 = end3;
 				top3 = top4; end3 = end4;
@@ -282,11 +283,12 @@ namespace mmlib {
 			}
 		}
 
+		// Loop of 3 lanes
 		for (;; advance(posOut, 1)) {
 			*posOut = std::move(*top1);
 			advance(top1, 1);
-			// レーン１が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 			if (top1 >= end1) {
+				// to Loop of 2 lanes
 				top1 = top2; end1 = end2;
 				top2 = top3; end2 = end3;
 				advance(posOut, 1);
@@ -311,10 +313,10 @@ namespace mmlib {
 			}
 		}
 
+		// Loop of 2 lanes
 		for (;; advance(posOut, 1)) {
 			*posOut = std::move(*top1);
 			advance(top1, 1);
-			// レーン１が終了したら「２レーンのループ」終了…残処理へ
 			if (top1 >= end1) {
 				top1 = top2; end1 = end2;
 				advance(posOut, 1);
@@ -330,7 +332,7 @@ namespace mmlib {
 			}
 		}
 		
-		// 残ったワーク領域の各レーンを出力先に格納する
+		// Processing of remaining lane
 		std::move(top1, end1, posOut);
 	}
 
@@ -341,7 +343,7 @@ namespace mmlib {
 	*/
 	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI out, PR pred, bool sourceIsEnable) {
 		const size_t range = std::distance(from, to);
-		//	ソート対象配列サイズが一定数未満のときは特別扱い
+		//	Special treatment when the size of the array to be sorted is less than a certain number
 		if (range < 10) {
 			if (sourceIsEnable)
 				std::move(from, to, out);
@@ -350,7 +352,7 @@ namespace mmlib {
 			return;
 		}
 
-		// ソート範囲を４つの区間（レーン）に分割
+		// Separate to 4 lanes
 		const size_t gap = range / 4;
 		const RAI pos1 = from;
 		const RAI pos2 = pos1 + gap;
@@ -363,13 +365,13 @@ namespace mmlib {
 		const OI opos4 = opos3 + gap;
 		const OI outto = out + range;
 
-		// 各レーンをソート
+		// Sort each lanes
 		_mas4Sort(opos1, opos2, pos1, pred, !sourceIsEnable);
 		_mas4Sort(opos2, opos3, pos2, pred, !sourceIsEnable);
 		_mas4Sort(opos3, opos4, pos3, pred, !sourceIsEnable);
 		_mas4Sort(opos4, outto, pos4, pred, !sourceIsEnable);
 
-		// 各レーンをマージ
+		// Merge each lanes
 		_mas4Merge(pos1, pos2, pos3, pos4, to, out, pred);
 	}
 
@@ -396,7 +398,7 @@ namespace mmlib {
 	/*
 	* mas4sort (4-way merge sort)
 	*/
-	template <class RAI> inline void mas4Sort(RAI first, RAI last) // cmpを省略した時に呼び出す。
+	template <class RAI> inline void mas4Sort(RAI first, RAI last)
 	{
 		mas4Sort(first, last, std::less<>());
 	}

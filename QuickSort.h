@@ -2,9 +2,9 @@
 /*
 * QuickSort.h
 *
-* [試験用] クイックソート
-* 以下の目的の試験用
-*   ・他のアルゴリズムとの比較
+* [TEST TYPE] Quick sort
+* For testing for the following purposes
+*   * Comparison with other algorithms
 *
 * Copyright (c) 2019 masakazu matsubara
 * Released under the MIT license
@@ -18,9 +18,8 @@ namespace mmlib {
 	template <class RAI, class PR> void quickSort(RAI from, RAI to, PR pred)
 	{
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
-		size_t range = to - from;		//	ソート範囲サイズ
+		size_t range = to - from;		// Sort range
 
-		//	ソート対象配列サイズが一定数以下のときは特別扱い
 		if (range < 20) {
 			insertionSort(from, to, pred);
 			return;
@@ -30,7 +29,7 @@ namespace mmlib {
 		RAI v2 = from + (range >> 1);
 		RAI v3 = to - 1;
 
-		//	３つのメディアン
+		//	median of three
 		if (pred(*v2, *v1) == false) {	//	v1 <= v2
 			if (pred(*v3, *v2) == false) {	//	v2 < v3
 				// v1 <= v2 <= v3
@@ -77,11 +76,11 @@ namespace mmlib {
 		}
 
 
-		RAIv pivot = *v2;	//	ピボット値
+		RAIv pivot = *v2;
 
-		//	パーティション操作
-		RAI curFrom = from;			//	min index / 現在処理中位置の小さい方の位置
-		RAI curTo = to - 1;			//	max index / 現在処理中位置の大きい方の位置
+		//	Partition operation
+		RAI curFrom = from;			//	min iterator
+		RAI curTo = to - 1;			//	max iterator
 		while (true) {
 			if (pred(*curFrom, pivot))
 				while (pred(*++curFrom, pivot));
@@ -92,13 +91,13 @@ namespace mmlib {
 			std::swap(*curFrom++, *curTo--);
 		};
 
-		//	小さいパーティション・大きいパーティションそれぞれで再起
+		// Recurcive operation in each small partition and large partition
 		quickSort(from, curTo + 1, pred);
 		quickSort(curFrom, to, pred);
 	}
 
 	template <class RAI>
-	inline void quickSort(RAI from, RAI to) // cmpを省略した時に呼び出す。
+	inline void quickSort(RAI from, RAI to)
 	{
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
 		quickSort(from, to, std::less<RAIv>());
