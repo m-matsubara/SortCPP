@@ -141,11 +141,11 @@ namespace mmlib {
 		const RAI  p4to = pos5;
 
 		// ４レーンのループ
-		for (;; advance(posOut, 1)) {
+		for (;; posOut++) {
 			if (state < 0x2000) {	//	state : [0x1234, 0x1432]
 				// レーン１から値を取得
 				*posOut = std::move(*pos1);
-				advance(pos1, 1);
+				pos1++;
 				// レーン１が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos1 >= p1to)
 					break;
@@ -257,7 +257,7 @@ namespace mmlib {
 			else if (state < 0x3000) {	//	state : [0x2134, 0x2431]
 				// レーン２から値を取得
 				*posOut = std::move(*pos2);
-				advance(pos2, 1);
+				pos2++;
 				// レーン２が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos2 >= p2to)
 					break;
@@ -369,7 +369,7 @@ namespace mmlib {
 			else if (state < 0x4000) {	//	state : [0x3124, 0x3421]
 				// レーン３から値を取得
 				*posOut = std::move(*pos3);
-				advance(pos3, 1);
+				pos3++;
 				// レーン３が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos3 >= p3to)
 					break;
@@ -481,7 +481,7 @@ namespace mmlib {
 			else {	//	state : [0x4123, 0x4321]
 				// レーン４から値を取得
 				*posOut = std::move(*pos4);
-				advance(pos4, 1);
+				pos4++;
 				// レーン４が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos4 >= p4to)
 					break;
@@ -591,16 +591,16 @@ namespace mmlib {
 				}
 			}
 		}
-		advance(posOut, 1);
+		posOut++;
 		state &= 0xfff;
 
 		// ３レーンのループ
-		for (;; advance(posOut, 1)) {
+		for (;; posOut++) {
 			// 以下のif文のネストは、本来なら switch case で処理するべきだが、if のネストのほうが速かったので、このような書き方にしている。
 			if (state < 0x200) {	//	state : [0x123, 0x143]
 				// レーン１から値を取得
 				*posOut = std::move(*pos1);
-				advance(pos1, 1);
+				pos1++;
 				// レーン１が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos1 >= p1to)
 					break;
@@ -658,7 +658,7 @@ namespace mmlib {
 			else if (state < 0x300) {	//	state : [0x213, 0x243]
 				// レーン２から値を取得
 				*posOut = std::move(*pos2);
-				advance(pos2, 1);
+				pos2++;
 				// レーン２が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos2 >= p2to)
 					break;
@@ -716,7 +716,7 @@ namespace mmlib {
 			else if (state < 0x400) {	//	state : [0x312, 0x342]
 				// レーン３から値を取得
 				*posOut = std::move(*pos3);
-				advance(pos3, 1);
+				pos3++;
 				// レーン３が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos3 >= p3to)
 					break;
@@ -774,7 +774,7 @@ namespace mmlib {
 			else {	//	state : [0x412, 0x432]
 				// レーン４から値を取得
 				*posOut = std::move(*pos4);
-				advance(pos4, 1);
+				pos4++;
 				// レーン４が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos4 >= p4to)
 					break;
@@ -830,15 +830,15 @@ namespace mmlib {
 				}
 			}
 		}
-		advance(posOut, 1);
+		posOut++;
 		state &= 0xff;
 
 		// ２レーンのループ
-		for (;; advance(posOut, 1)) {
+		for (;; posOut++) {
 			if (state < 0x20) {	//	state : [0x12, 0x14]
 				// レーン１から値を取得
 				*posOut = std::move(*pos1);
-				advance(pos1, 1);
+				pos1++;
 				if (pos1 >= p1to)
 					break;
 				// state変数を更新
@@ -865,7 +865,7 @@ namespace mmlib {
 			else if (state < 0x30) {	//	state : [0x21, 0x24]
 				// レーン２から値を取得
 				*posOut = std::move(*pos2);
-				advance(pos2, 1);
+				pos2++;
 				if (pos2 >= p2to)
 					break;
 				// state変数を更新
@@ -892,7 +892,7 @@ namespace mmlib {
 			else if (state < 0x40) {	//	state : [0x31, 0x34]
 				// レーン３から値を取得
 				*posOut = std::move(*pos3);
-				advance(pos3, 1);
+				pos3++;
 				if (pos3 >= p3to)
 					break;
 				// state変数を更新
@@ -919,7 +919,7 @@ namespace mmlib {
 			else {	//	state : [0x41, 0x43]
 				// レーン４から値を取得
 				*posOut = std::move(*pos4);
-				advance(pos4, 1);
+				pos4++;
 				if (pos4 >= p4to)
 					break;
 				// state変数を更新
@@ -944,7 +944,7 @@ namespace mmlib {
 				}
 			}
 		}
-		advance(posOut, 1);
+		posOut++;
 		state &= 0xf;
 
 		// 残ったワーク領域の各レーンを出力先に格納する
@@ -1015,7 +1015,7 @@ namespace mmlib {
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
 		std::vector<RAIv> workVector;
 		workVector.reserve(range);
-		for (RAI item = first; item < to; advance(item, 1)) {
+		for (RAI item = first; item < to; item++) {
 			workVector.push_back(std::move(*item));
 		}
 
