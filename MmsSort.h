@@ -26,9 +26,9 @@ namespace mmlib {
 		BIv pivot1;
 		BIv pivot2;
 		if (range >= 150) {
-			// ピボット候補値の添え字の差分
+			// Difference between subscripts of pivot candidate values
 			size_t gap = range / 12;
-			// ピボット候補値の添え字
+			// Subscript of pivot candidate value
 			RAI center = from + (range >> 1);
 			RAI p3 = center - gap;
 			RAI p2 = p3 - gap;
@@ -62,9 +62,9 @@ namespace mmlib {
 			//CopyData(&pivot2, &(*(works + 5)));
 		}
 		else {
-			// ピボット候補値の添え字の差分
+			// Difference between subscripts of pivot candidate values
 			size_t gap = range / 6;
-			// ピボット候補値の添え字
+			// Subscript of pivot candidate value
 			RAI p2 = from + (range >> 1);
 			RAI p3 = p2 + gap;
 			RAI p4 = p3 + gap;
@@ -87,20 +87,21 @@ namespace mmlib {
 			//CopyData(&pivot2, &(*(works + 3)));
 		}
 
-		if (pred(pivot1, pivot2)) {	//	つまりは pivot1 < pivot2
-			// pivot1 ≠ pivot2 のケース
-			// dual pivot quick sort ベースの処理
-			RAI idx1A = from;		//	value <= pivot1 の要素へのインデックス(arraysへの配置用)
-			RAI idx2W = works;			//	pivot1 < value < pivot2の要素へのインデックス(worksへの配置用)
-			RAI idx3W = works + range - 1;	//	pivot2 <= value へのインデックス(worksへの配置用)
+		// pivot1 ≦ pivot2 ()
+		if (pred(pivot1, pivot2)) {
+			// pivot1 ≠ pivot2
+			// dual pivot quick sort
+			RAI idx1A = from;				// Iterator of value <= pivot1 elements (to arrays)
+			RAI idx2W = works;				// Iterator pivot1 < value < pivot2 elements (to works)
+			RAI idx3W = works + range - 1;	// Iterator pivot2 <= value elements (to works)
 
-			// 先頭から後方に向かってパーティション操作を行う。（一般的なクイックソートのように前後からではない）
-			//   ピボット１以下の値は配列の前方に詰めていく
-			//   ピボット２以上の値は作業領域の後方に詰めていく
-			//   ピボット１より大きくピボット２より小さい値は、作業領域の前方に詰めていく
+			// Perform partition operations from the beginning to the back. (Not from the front and back like general quicksort)
+			//   Values ​​below pivot1 are packed to the front of the array
+			//   Values ​​with pivot2 or higher are packed behind the work area
+			//   Values ​​larger than pivot1 and smaller than pivot2 are packed in front of the work area.
 			for (RAI idx = from; idx < to; idx++) {
 				if (pred(pivot1, *idx) == false) {	// idx <= pivot1
-					*(idx1A++) = std::move(*idx);		// TODO ここで余計な代入が発生するケースがあるが、下手に最適化すると逆に遅くなってしまう…。
+					*(idx1A++) = std::move(*idx);		// TODO There are cases where extra substitution occurs here.
 					//CopyData(&(*(idx1A++)), &(*idx));
 				}
 				else if (pred(*idx, pivot2) == false) {		// idx >= pivot2
@@ -114,36 +115,36 @@ namespace mmlib {
 			}
 
 			RAI idxTo = idx1A;
-			// ピボット１より大きく、ピボット２より小さいオブジェクト (pivot1 < value < pivot2) を works から array へ書き戻し
+			// Write back objects larger than pivot 1 and smaller than pivot 2 (pivot1 < value < pivot2) from works to array
 			for (RAI idx = works; idx < idx2W; idx++) {
 				*(idxTo++) = std::move(*idx);
 				//CopyData(&(*(idxTo++)), &(*idx));
 			}
-			// ピボット１より大きく、ピボット２より小さいオブジェクト(pivot1 < value < pivot2)をソート
+			// Sort objects larger than pivot1 and smaller than pivot 2 (pivot1 < value < pivot2)
 			mmsSort(idx1A, idxTo, works, pred);
 
-			// ピボット２以上のオブジェクト(pivot2 ≦ value)を works から array へ書き戻し
+			// Write back objects with pivot2 or higher (pivot2 ≦ value) from works to array
 			for (RAI idx = works + range - 1; idx > idx3W; idx--) {
 				*(idxTo++) = std::move(*idx);
 				//CopyData(&(*(idxTo++)), &(*idx));
 			}
-			// ピボット２以上のオブジェクト(pivot2 ≦ value)をソート
+			// Sort objects with pivot2 or higher (pivot2 ≦ value)
 			mmsSort(idx1A + (idx2W - works), to, works, pred);
 
-			// ピボット１以下のオブジェクト(value ≦ pivot2)は最後にソート（CPUキャッシュに残っている可能性が低いので…。）
+			// Objects with pivot1 or less (value ≦ pivot2) are sorted at the end (because it is unlikely that they remain in the CPU cache ...)
 			mmsSort(from, idx1A, works, pred);
 		}
 		else {
-			// pivot2 が pivot1 より小さいわけはないので、pivot1 ＝ pivot2 のケース
-			// 3 way partition ベースの処理
-			RAI idx1A = from;				// value < pivot の要素へのインデックス(arrayへの配置用)
-			RAI idx2W = works;				// value == pivot の要素へのインデックス(worksへの配置用)
-			RAI idx3W = works + range - 1;	// pivot < value へのインデックス(worksへの配置用)
+			// The case of pivot1 = pivot2 because pivot2 cannot be less than pivot1
+			// 3 way partition
+			RAI idx1A = from;				// Iterator of "value < pivot" elements (to "array")
+			RAI idx2W = works;				// Iterator of "value == pivot" elements (to "works")
+			RAI idx3W = works + range - 1;	// Iterator of "pivot < value" elements (to "works")
 
-			// 先頭から後方に向かってパーティション操作を行う。（一般的なクイックソートのように前後からではない）
-			//   ピボット値より大きい値は配列の前方に詰めていく
-			//   ピボット値より小さい値は作業領域の後方に詰めていく
-			//   ピボット値と同じキー値の値は、作業領域の前方に詰めていく
+			// Perform partition operations from the beginning to the back. (Not from the front and back like general quicksort)
+			//   Values ​​larger than the pivot value are packed to the front of the array
+			//   Values ​​smaller than the pivot value are packed behind the work area.
+			//   The value of the same key value as the pivot value is packed in front of the work area.
 			for (RAI idx = from; idx < to; idx++) {
 				if (pred(*idx, pivot1)) {
 					*(idx1A++) = std::move(*idx);
@@ -159,21 +160,21 @@ namespace mmlib {
 			}
 
 			RAI idxTo = idx1A;
-			// ピボット値と同じキーのオブジェクト(value = pivot1)を works から array へ書き戻し
+			// Write back an object (value = pivot1) with the same key as the pivot value from works to array
 			for (RAI idx = works; idx < idx2W; idx++) {
 				*(idxTo++) = std::move(*idx);
 				//CopyData(&(*(idxTo++)), &(*idx));
 			}
 
-			// ピボット値よりも大きいオブジェクト(pivot1 < value)を works から array へ書き戻し
+			// Write back objects (pivot1 <value) greater than the pivot value from works to array
 			for (RAI idx = works + range - 1; idx > idx3W; idx--) {
 				*(idxTo++) = std::move(*idx);
 				//CopyData(&(*(idxTo++)), &(*idx));
 			}
 
-			// ピボット値より大きいオブジェクト(pivot1 < value)を先にソート（直前に配列コピーを行っており、CPUキャッシュにヒットしやすいため）
+			// Sort objects larger than the pivot value (pivot1 <value) first (because the array is copied immediately before and it is easy to hit the CPU cache)
 			mmsSort(idx1A + (idx2W - works), to, works, pred);
-			// ピボット値より小さいオブジェクト(value < pivot1)をあとにソート（CPUキャッシュヒット率がたぶん低い）
+			// Sort objects smaller than the pivot value (value <pivot1) later (CPU cache hit rate is probably low)
 			mmsSort(from, idx1A, works, pred);
 		}
 	}
@@ -188,7 +189,7 @@ namespace mmlib {
 	}
 
 	template <class RAI>
-	inline void mmsSort(RAI from, RAI to) // cmpを省略した時に呼び出す。
+	inline void mmsSort(RAI from, RAI to)
 	{
 		typedef typename std::iterator_traits<RAI>::value_type BIv;
 		mmsSort(from, to, std::less<BIv>());

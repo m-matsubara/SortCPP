@@ -65,7 +65,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 	RAI p3to = to;
 
 	for (; outi < to; outi++) {
-		// 以下のif文のネストは、本来なら switch case で処理するべきだが、if のネストのほうが速かったので、このような書き方にしている。
+		// "if" nesting was faster than "switch case"
 		if (state < 0x200) {
 			// 0-1
 			//CopyData(idx, pos1++, 1);
@@ -77,7 +77,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos2, *pos1) == false)	// pos1 <= pos2
-					; // モード変更なし
+					; // No change state
 				else if (pred(*pos3, *pos1) == false)		// pos1 <= pos3
 					state = 0x213;
 				else
@@ -89,7 +89,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos1) == false)		// pos1 <= pos3
-					; // モード変更なし
+					; // No change state
 				else if (pred(*pos2, *pos1) == false)		// pos1 <= pos2
 					state = 0x312;
 				else
@@ -106,7 +106,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos2, *pos1))				//	pos2 < pos1
-					; // モード変更なし
+					; // No change state
 				else if (pred(*pos3, *pos2) == false)		//	pos2 <= pos3
 					state = 0x123;
 				else
@@ -118,7 +118,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos2) == false)		// pos2 <= pos3
-					; // モード変更なし
+					; // No change state
 				else if (pred(*pos2, *pos1))				// pos2 < pos1
 					state = 0x321;
 				else
@@ -135,7 +135,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos1))	//	pos3 < pos1
-					; // モード変更なし
+					; // No change state
 				else if (pred(*pos3, *pos2))	//	pos3 < pos2
 					state = 0x132;
 				else
@@ -147,7 +147,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos2))	// pos3 < pos2
-					; // モード変更なし
+					; // No change state
 				else if (pred(*pos3, *pos1))	// pos3 < pos1
 					state = 0x231;
 				else
@@ -158,7 +158,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 	outi++;
 
 	for (; outi < to; outi++) {
-		// 以下のif文のネストは、本来なら switch case で処理するべきだが、if のネストのほうが速かったので、このような書き方にしている。
+		// "if" nesting was faster than "switch case"
 		if (state < 0x21) {
 			*outi = std::move(*pos1);
 			pos1++;
@@ -168,7 +168,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos2, *pos1) == false)	// pos1 <= pos2
-					; // モード変更なし
+					; // No change state
 				else
 					state = 0x21;
 			}
@@ -178,7 +178,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos1) == false)		// pos1 <= pos3
-					; // モード変更なし
+					; // No change state
 				else
 					state = 0x31;
 			}
@@ -192,7 +192,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos2, *pos1))	// pos2 < pos1
-					; // モード変更なし
+					; // No change state
 				else
 					state = 0x12;
 			}
@@ -202,7 +202,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos2) == false)		// pos2 <= pos3
-					; // モード変更なし
+					; // No change state
 				else
 					state = 0x32;
 			}
@@ -216,7 +216,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos1))		// pos3 < pos1
-					; // モード変更なし
+					; // No change state
 				else
 					state = 0x13;
 			}
@@ -226,7 +226,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 					break;
 				}
 				else if (pred(*pos3, *pos2))		// pos3 < pos2
-					; // モード変更なし
+					; // No change state
 				else
 					state = 0x23;
 			}
@@ -249,7 +249,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 template <class RAI, class PR> void masSort(RAI from, RAI to, RAI works, PR pred) {
 	size_t range = to - from;
 
-	//	ソート対象配列サイズが一定数未満のときは特別扱い
+	//	Special treatment when the size of the array to be sorted is less than a certain number
 	if (range < 10) {
 		insertionSort(from, to, pred);
 		return;
@@ -263,7 +263,7 @@ template <class RAI, class PR> void masSort(RAI from, RAI to, RAI works, PR pred
 	masSort(pos2, pos3, works, pred);
 	masSort(from, pos2, works, pred);
 
-	// ソート済み配列の場合の高速化
+	// Faster for sorted arrays
 	if (pred(*pos2, *(pos2 - 1)) == false && pred(*pos3, *(pos3 - 1)) == false)
 		return;
 
@@ -281,7 +281,7 @@ template <class RAI, class PR> void masSort(RAI from, RAI to, PR pred) {
 }
 
 template <class RAI>
-inline void masSort(RAI from, RAI to) // cmpを省略した時に呼び出す。
+inline void masSort(RAI from, RAI to)
 {
 	masSort(from, to, std::less<>());
 }

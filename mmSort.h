@@ -14,11 +14,11 @@ namespace mmlib {
 	template <class RAI, class PR> void mmSort(RAI from, RAI to, PR pred)
 	{
 		typedef typename std::iterator_traits<RAI>::value_type BIv;
-		size_t range = to - from;		//	ソート範囲サイズ
+		size_t range = to - from;		// Sort range
 
 		//std::cout << range << std::endl;
 
-		//	ソート対象配列サイズが一定数以下のときは特別扱い
+		//	Special treatment when the size of the array to be sorted is less than a certain number
 		if (range < 20) {
 			insertionSort(from, to, pred);
 			return;
@@ -30,10 +30,10 @@ namespace mmlib {
 		RAI v2 = v1 + ((v3 - v1) >> 1);
 		RAI v4 = v3 + ((v5 - v3) >> 1);
 
-		//sort5 メソッドの呼び出しを手動でインライン展開
+		// Sort 5 elements
 		//sort5(array, p1, p2, p3, p4, p5, comparator);
 		{
-			//	まず、先頭３つのソート
+			//	First, the first three sorts
 			if (pred(*v2, *v1) == false) {	//	v1 <= v2
 				if (pred(*v3, *v2) == false) {	//	v2 < v3
 					// v1 <= v2 <= v3
@@ -79,7 +79,7 @@ namespace mmlib {
 				}
 			}
 
-			// v4 ( = array[p4]) を挿入ソートっぽく指定位置に挿入
+			// Determine v4 (=array[p4]) position
 			if (pred(*v4, *v2) == false) {		// v2 <= v4
 				if (pred(*v4, *v3) == false) {	// v3 <= v4
 					// array[p3] <= v4
@@ -109,10 +109,10 @@ namespace mmlib {
 				}
 			}
 
-			// v5 ( = array[p5]) を挿入ソートっぽく指定位置に挿入
+			// Determine v5 (=array[p5]) position
 			if (pred(*v5, *v3) == false) {		// v3 <= v5
 				// array[p3] <= v5
-				/* 4番目 と 5番目の位置関係は重要ではない(v3が中央に来さえすればよい)
+				/* The 4th and 5th positional relationship is not important (as long as v3 is in the center)
 				if (pred(array[p4], v5) <= 0) {
 				// array[p3] <= array[4] <= v5
 				} else {
@@ -133,7 +133,7 @@ namespace mmlib {
 				}
 				else {
 					// v5 < array[p2] <= array[p3]
-					/* 1番目 と 2番目の位置関係は重要ではない(v3が中央に来さえすればよい)
+					/* The 1st and 2nd positional relationship is not important (as long as v3 is in the center) 
 					if (pred(array[p1], v5) <= 0) {
 					// array[p1] <= v5 < array[p2] <= array[p3]
 					array[p5] = array[p4];
@@ -168,18 +168,18 @@ namespace mmlib {
 		*   array[from + 1]とarray[p2]の値を入れ替え
 		*   array[from + 2]とarray[p3]の値を入れ替え
 		*   array[to - 2]とarray[p4]の値を入れ替え
-		* とすることで、パーティション操作のの範囲を狭くすることができる。
+		* とすることで、パーティション操作の範囲を狭くすることができる。
 		**/
 
 		std::swap(from[1], *v2);
 		std::swap(from[2], *v3);
 		std::swap(to[-2], *v4);
 
-		RAI pivot = from + 2;	//	ピボット値
+		RAI pivot = from + 2;	// pivot
 
-		//	パーティション操作
-		RAI curFrom = from + 3;			//	min index / 現在処理中位置の小さい方の位置
-		RAI curTo = to - 1 - 2;			//	max index / 現在処理中位置の大きい方の位置
+		//	Partition operation
+		RAI curFrom = from + 3;			//	min index / The smaller position currently being processed
+		RAI curTo = to - 1 - 2;			//	max index / The larger position currently being processed
 		while (true) {
 			if (pred(*curFrom, *pivot))
 				while (pred(*++curFrom, *pivot));
@@ -194,15 +194,15 @@ namespace mmlib {
 		};
 
 		//	ピボット値をパーティションの間に入れ替える（再起の処理の対象外にできる）
+		// Swap the pivot value between partitions (can be excluded from the recurcive process)
 		std::swap(from[2], *curTo);
 
-		//	小さいパーティション・大きいパーティションそれぞれで再起
 		mmSort(from, curTo, pred);
 		mmSort(curFrom, to, pred);
 	}
 
 	template <class RAI>
-	inline void mmSort(RAI from, RAI to) // cmpを省略した時に呼び出す。
+	inline void mmSort(RAI from, RAI to)
 	{
 		typedef typename std::iterator_traits<RAI>::value_type RAIv;
 		mmSort(from, to, std::less<RAIv>());

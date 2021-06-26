@@ -1,13 +1,13 @@
 ﻿#pragma once
 /*
-* Mas4Sort.h
-*
-* Mas4Sort 2nd Generation implements.
-*
-* Copyright (c) 2017 masakazu matsubara
-* Released under the MIT license
-* https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
-*/
+ * Mas4Sort.h
+ *
+ * Mas4Sort 2nd Generation implements.
+ *
+ * Copyright (c) 2017 masakazu matsubara
+ * Released under the MIT license
+ * https://github.com/m-matsubara/SortCPP/blob/master/LICENSE.txt
+ */
 
 #include <vector>
 
@@ -16,27 +16,27 @@
 namespace mmlib {
 
 	/*
-	* 4-way merge
-	* internal function
-	*/
+	 * 4-way merge
+	 * internal function
+	 */
 	template <class RAI, class OI, class PR> void _mas4Merge(RAI pos1, RAI pos2, RAI pos3, RAI pos4, RAI pos5, OI posOut, PR pred) {
 
 		/*
-		* 各レーンをその先頭値でソートし、ソート結果を int の変数１つで管理する
-		* 例1) 各レーンの先頭の値が以下の場合、 state = 0x1234 となる
-		*   レーン1 : 10
-		*   レーン2 : 20
-		*   レーン3 : 30
-		*   レーン4 : 40
-		* 例2) 各レーンの先頭の値が以下の場合、 state = 0x2413 となる
-		*   レーン1 : 30
-		*   レーン2 : 10
-		*   レーン3 : 40
-		*   レーン4 : 20
+		* Sort each lane by its start value and manage the sort result with one int variable
+		* Ex1) If the value at the beginning of each lane is, then state = 0x1234
+		*   lane1 : 10
+		*   lane2 : 20
+		*   lane3 : 30
+		*   lane4 : 40
+		* Ex2) If the value at the beginning of each lane is, then state = 0x2413
+		*   lane1 : 30
+		*   lane2 : 10
+		*   lane3 : 40
+		*   lane4 : 20
 		*/
 		int state;
 
-		// state 変数の初期状態決定
+		// Determining the initial state of the "state" variable
 		if (pred(*pos2, *pos1) == false) {						// *pos1 <= *pos2
 			// array[p1] <= array[p2]
 			if (pred(*pos3, *pos2) == false) {					// *pos2 <= *pos3
@@ -134,22 +134,21 @@ namespace mmlib {
 			}
 		}
 
-		// 各レーンの終了位置
+		//End position of each lane
 		const auto p1to = pos2;
 		const auto p2to = pos3;
 		const auto p3to = pos4;
 		const RAI  p4to = pos5;
 
-		// ４レーンのループ
+		// Loop of 4 lanes
 		for (;; posOut++) {
 			if (state < 0x2000) {	//	state : [0x1234, 0x1432]
-				// レーン１から値を取得
+				// Get value from lane1 
 				*posOut = std::move(*pos1);
 				pos1++;
-				// レーン１が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos1 >= p1to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane1 finished. to Loop of 3 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x1234:
 					if (pred(*pos3, *pos1) == false) {		// *pos1 <= *pos3
@@ -255,13 +254,12 @@ namespace mmlib {
 				}
 			}
 			else if (state < 0x3000) {	//	state : [0x2134, 0x2431]
-				// レーン２から値を取得
+				// Get value from lane2 
 				*posOut = std::move(*pos2);
 				pos2++;
-				// レーン２が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos2 >= p2to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane2 finished. to Loop of 3 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x2134:
 					if (pred(*pos3, *pos2) == false) {		// *pos2 <= *pos3
@@ -367,13 +365,12 @@ namespace mmlib {
 				}
 			}
 			else if (state < 0x4000) {	//	state : [0x3124, 0x3421]
-				// レーン３から値を取得
+				// Get value from lane3
 				*posOut = std::move(*pos3);
 				pos3++;
-				// レーン３が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos3 >= p3to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane3 finished. to Loop of 3 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x3124:
 					if (pred(*pos3, *pos2)) {					// *pos3 < *pos2
@@ -479,13 +476,12 @@ namespace mmlib {
 				}
 			}
 			else {	//	state : [0x4123, 0x4321]
-				// レーン４から値を取得
+				// Get value from lane4
 				*posOut = std::move(*pos4);
 				pos4++;
-				// レーン４が終了したら「４レーンのループ」を抜けて「３レーンのループ」へ
 				if (pos4 >= p4to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane4 finished. to Loop of 3 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x4123:
 					if (pred(*pos4, *pos2)) {					// *pos4 < *pos2
@@ -594,21 +590,20 @@ namespace mmlib {
 		posOut++;
 		state &= 0xfff;
 
-		// ３レーンのループ
+		// Loop of 3 lanes
 		for (;; posOut++) {
-			// 以下のif文のネストは、本来なら switch case で処理するべきだが、if のネストのほうが速かったので、このような書き方にしている。
+			// "if" nesting was faster than "switch case"
 			if (state < 0x200) {	//	state : [0x123, 0x143]
-				// レーン１から値を取得
+				// Get value from lane1
 				*posOut = std::move(*pos1);
 				pos1++;
-				// レーン１が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos1 >= p1to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane1 finished. to Loop of 2 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x123:
 					if (pred(*pos2, *pos1) == false)			// *pos1 <= *pos2
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos1) == false)		// *pos1 <= *pos3
 						state = 0x213;
 					else
@@ -616,7 +611,7 @@ namespace mmlib {
 					break;
 				case 0x124:
 					if (pred(*pos2, *pos1) == false)			// *pos1 <= *pos2
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos1) == false)		// *pos1 <= *pos4
 						state = 0x214;
 					else
@@ -624,7 +619,7 @@ namespace mmlib {
 					break;
 				case 0x132:
 					if (pred(*pos3, *pos1) == false)			// *pos1 <= *pos3
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos2, *pos1) == false)		// *pos1 <= *pos2
 						state = 0x312;
 					else
@@ -632,7 +627,7 @@ namespace mmlib {
 					break;
 				case 0x134:
 					if (pred(*pos3, *pos1) == false)			// *pos1 <= *pos3
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos1) == false)		// *pos1 <= *pos4
 						state = 0x314;
 					else
@@ -640,7 +635,7 @@ namespace mmlib {
 					break;
 				case 0x142:
 					if (pred(*pos4, *pos1) == false)			// *pos1 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos2, *pos1) == false)		// *pos1 <= *pos2
 						state = 0x412;
 					else
@@ -648,7 +643,7 @@ namespace mmlib {
 					break;
 				case 0x143:
 					if (pred(*pos4, *pos1) == false) 			// *pos1 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos1) == false)		// *pos1 <= *pos3
 						state = 0x413;
 					else
@@ -656,17 +651,16 @@ namespace mmlib {
 				}
 			}
 			else if (state < 0x300) {	//	state : [0x213, 0x243]
-				// レーン２から値を取得
+				// Get value from lane2 
 				*posOut = std::move(*pos2);
 				pos2++;
-				// レーン２が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos2 >= p2to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane1 finished. to Loop of 2 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x213:
 					if (pred(*pos2, *pos1))					// *pos2 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos2) == false)		// *pos2 <= *pos3
 						state = 0x123;
 					else
@@ -674,7 +668,7 @@ namespace mmlib {
 					break;
 				case 0x214:
 					if (pred(*pos2, *pos1))					// *pos2 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos2) == false)		// *pos2 <= *pos4
 						state = 0x124;
 					else
@@ -682,7 +676,7 @@ namespace mmlib {
 					break;
 				case 0x231:
 					if (pred(*pos3, *pos2) == false)			// *pos2 <= *pos3
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos2, *pos1))				// *pos2 < *pos1
 						state = 0x321;
 					else
@@ -690,7 +684,7 @@ namespace mmlib {
 					break;
 				case 0x234:
 					if (pred(*pos3, *pos2) == false)			// *pos2 <= *pos3
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos2) == false)		// *pos2 <= *pos4
 						state = 0x324;
 					else
@@ -698,7 +692,7 @@ namespace mmlib {
 					break;
 				case 0x241:
 					if (pred(*pos4, *pos2) == false)			// *pos2 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos2, *pos1))				// *pos2 < *pos1
 						state = 0x421;
 					else
@@ -706,7 +700,7 @@ namespace mmlib {
 					break;
 				case 0x243:
 					if (pred(*pos4, *pos2) == false)			// *pos2 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos2) == false)		// *pos2 <= *pos3
 						state = 0x423;
 					else
@@ -714,17 +708,16 @@ namespace mmlib {
 				}
 			}
 			else if (state < 0x400) {	//	state : [0x312, 0x342]
-				// レーン３から値を取得
+				// Get value from lane3
 				*posOut = std::move(*pos3);
 				pos3++;
-				// レーン３が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos3 >= p3to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane1 finished. to Loop of 2 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x312:
 					if (pred(*pos3, *pos1))					// *pos3 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos2))				// *pos3 < *pos2
 						state = 0x132;
 					else
@@ -732,7 +725,7 @@ namespace mmlib {
 					break;
 				case 0x314:
 					if (pred(*pos3, *pos1))					// *pos3 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos3) == false)		// *pos3 <= *pos4
 						state = 0x134;
 					else
@@ -740,7 +733,7 @@ namespace mmlib {
 					break;
 				case 0x321:
 					if (pred(*pos3, *pos2))					// *pos3 < *pos2
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos1))				// *pos3 < *pos1
 						state = 0x231;
 					else
@@ -748,7 +741,7 @@ namespace mmlib {
 					break;
 				case 0x324:
 					if (pred(*pos3, *pos2))					// *pos3 < *pos2
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos3) == false)		// *pos3 <= *pos4
 						state = 0x234;
 					else
@@ -756,7 +749,7 @@ namespace mmlib {
 					break;
 				case 0x341:
 					if (pred(*pos4, *pos3) == false)			// *pos3 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos1))				// *pos3 < *pos1
 						state = 0x431;
 					else
@@ -764,7 +757,7 @@ namespace mmlib {
 					break;
 				case 0x342:
 					if (pred(*pos4, *pos3) == false)			// *pos3 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos3, *pos2))				// *pos3 < *pos2
 						state = 0x432;
 					else
@@ -772,17 +765,16 @@ namespace mmlib {
 				}
 			}
 			else {	//	state : [0x412, 0x432]
-				// レーン４から値を取得
+				// Get value from lane4
 				*posOut = std::move(*pos4);
 				pos4++;
-				// レーン４が終了したら「３レーンのループ」を抜けて「２レーンのループ」へ
 				if (pos4 >= p4to)
-					break;
-				// state変数を更新(binary insertion sortのような感じで)
+					break;	// lane4 finished. to Loop of 2 lanes
+				// Update state variable (Like binary insertion sort)
 				switch (state) {
 				case 0x412:
 					if (pred(*pos4, *pos1))					// *pos4 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos2))				// *pos4 < *pos2
 						state = 0x142;
 					else
@@ -790,7 +782,7 @@ namespace mmlib {
 					break;
 				case 0x413:
 					if (pred(*pos4, *pos1))					// *pos4 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos3))				// *pos4 < *pos3
 						state = 0x143;
 					else
@@ -798,7 +790,7 @@ namespace mmlib {
 					break;
 				case 0x421:
 					if (pred(*pos4, *pos2))					// *pos4 < *pos2
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos1))				// *pos4 < *pos1
 						state = 0x241;
 					else
@@ -806,7 +798,7 @@ namespace mmlib {
 					break;
 				case 0x423:
 					if (pred(*pos4, *pos2))					// *pos4 < *pos2
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos3))				// *pos4 < *pos3
 						state = 0x243;
 					else
@@ -814,7 +806,7 @@ namespace mmlib {
 					break;
 				case 0x431:
 					if (pred(*pos4, *pos3))					// *pos4 < *pos3
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos1))				// *pos4 < *pos1
 						state = 0x341;
 					else
@@ -822,7 +814,7 @@ namespace mmlib {
 					break;
 				case 0x432:
 					if (pred(*pos4, *pos3))					// *pos4 < *pos3
-						; // モード変更なし
+						; // No update state 
 					else if (pred(*pos4, *pos2))				// *pos4 < *pos2
 						state = 0x342;
 					else
@@ -833,112 +825,112 @@ namespace mmlib {
 		posOut++;
 		state &= 0xff;
 
-		// ２レーンのループ
+		// Loop of 2 lanes
 		for (;; posOut++) {
 			if (state < 0x20) {	//	state : [0x12, 0x14]
-				// レーン１から値を取得
+				// Get value from lane1
 				*posOut = std::move(*pos1);
 				pos1++;
 				if (pos1 >= p1to)
 					break;
-				// state変数を更新
+				// Update state variable
 				switch (state) {
 				case 0x12:
 					if (pred(*pos2, *pos1) == false)			// *pos1 <= *pos2
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x21;
 					break;
 				case 0x13:
 					if (pred(*pos3, *pos1) == false)			// *pos1 <= *pos3
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x31;
 					break;
 				case 0x14:
 					if (pred(*pos4, *pos1) == false)			// *pos1 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x41;
 				}
 			}
 			else if (state < 0x30) {	//	state : [0x21, 0x24]
-				// レーン２から値を取得
+				// Get value from lane2 
 				*posOut = std::move(*pos2);
 				pos2++;
 				if (pos2 >= p2to)
 					break;
-				// state変数を更新
+				// Update state variable
 				switch (state) {
 				case 0x21:
 					if (pred(*pos2, *pos1))					// *pos2 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x12;
 					break;
 				case 0x23:
 					if (pred(*pos3, *pos2) == false)			// *pos2 <= *pos3
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x32;
 					break;
 				case 0x24:
 					if (pred(*pos4, *pos2) == false)			// *pos2 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x42;
 				}
 			}
 			else if (state < 0x40) {	//	state : [0x31, 0x34]
-				// レーン３から値を取得
+				// Get value from lane3
 				*posOut = std::move(*pos3);
 				pos3++;
 				if (pos3 >= p3to)
 					break;
-				// state変数を更新
+				// Update state variable
 				switch (state) {
 				case 0x31:
 					if (pred(*pos3, *pos1))					// *pos3 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x13;
 					break;
 				case 0x32:
 					if (pred(*pos3, *pos2))					// *pos3 < *pos2
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x23;
 					break;
 				case 0x34:
 					if (pred(*pos4, *pos3) == false)			// *pos3 <= *pos4
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x43;
 				}
 			}
 			else {	//	state : [0x41, 0x43]
-				// レーン４から値を取得
+				// Get value from lane4
 				*posOut = std::move(*pos4);
 				pos4++;
 				if (pos4 >= p4to)
 					break;
-				// state変数を更新
+				// Update state variable
 				switch (state) {
 				case 0x41:
 					if (pred(*pos4, *pos1))					// *pos4 < *pos1
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x14;
 					break;
 				case 0x42:
 					if (pred(*pos4, *pos2))					// *pos4 < *pos2
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x24;
 					break;
 				case 0x43:
 					if (pred(*pos4, *pos3))					// *pos4 < *pos3
-						; // モード変更なし
+						; // No update state 
 					else
 						state = 0x34;
 				}
@@ -947,7 +939,7 @@ namespace mmlib {
 		posOut++;
 		state &= 0xf;
 
-		// 残ったワーク領域の各レーンを出力先に格納する
+		// Processing of remaining lane
 		switch (state) {
 		case 0x1:
 			std::move(pos1, p1to, posOut);
@@ -965,12 +957,12 @@ namespace mmlib {
 
 
 	/*
-	* mas4sort (4-way merge sort)
-	* internal function
-	*/
+	 * mas4sort (4-way merge sort)
+	 * internal function
+	 */
 	template <class RAI, class OI, class PR> void _mas4Sort(RAI from, RAI to, OI out, PR pred, bool sourceIsEnable) {
 		const size_t range = std::distance(from, to);
-		//	ソート対象配列サイズが一定数未満のときは特別扱い
+		//	Special treatment when the size of the array to be sorted is less than a certain number
 		if (range < 10) {
 			if (sourceIsEnable)
 				std::move(from, to, out);
@@ -979,7 +971,7 @@ namespace mmlib {
 			return;
 		}
 
-		// ソート範囲を４つの区間（レーン）に分割
+		// Separate to 4 lanes
 		const size_t gap = range / 4;
 		const RAI pos1 = from;
 		const RAI pos2 = pos1 + gap;
@@ -992,19 +984,19 @@ namespace mmlib {
 		const OI opos4 = opos3 + gap;
 		const OI outto = out + range;
 
-		// 各レーンをソート
+		// Sort each lanes
 		_mas4Sort(opos1, opos2, pos1, pred, !sourceIsEnable);
 		_mas4Sort(opos2, opos3, pos2, pred, !sourceIsEnable);
 		_mas4Sort(opos3, opos4, pos3, pred, !sourceIsEnable);
 		_mas4Sort(opos4, outto, pos4, pred, !sourceIsEnable);
 
-		// 各レーンをマージ
+		// Merge each lanes
 		_mas4Merge(pos1, pos2, pos3, pos4, to, out, pred);
 	}
 
 	/*
-	* mas4sort (4-way merge sort)
-	*/
+	 * mas4sort (4-way merge sort)
+	 */
 	template <class RAI, class PR> void mas4Sort(RAI first, RAI to, PR pred) {
 		size_t range = std::distance(first, to);
 		if (range <= 32) {
@@ -1023,9 +1015,9 @@ namespace mmlib {
 	}
 
 	/*
-	* mas4sort (4-way merge sort)
-	*/
-	template <class RAI> inline void mas4Sort(RAI first, RAI last) // cmpを省略した時に呼び出す。
+	 * mas4sort (4-way merge sort)
+	 */
+	template <class RAI> inline void mas4Sort(RAI first, RAI last)
 	{
 		mas4Sort(first, last, std::less<>());
 	}
