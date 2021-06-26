@@ -15,7 +15,7 @@ template <class RAI> inline static void MoveData(RAI Dest, RAI Src, size_t sztCo
 {
 	for (size_t idx = 0; idx < sztCount; idx++) {
 		*Dest++ = std::move(*Src);
-		std::advance(Src, 1);
+		Src++;
 	}
 }
 
@@ -70,7 +70,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 			// 0-1
 			//CopyData(idx, pos1++, 1);
 			*outi = std::move(*pos1);
-			advance(pos1, 1);
+			pos1++;
 			if (state == 0x123) {	// 0 0x123
 				if (pos1 >= p1to) {
 					state = 0x23;
@@ -99,7 +99,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 		else if (state < 0x300) {
 			// 2-3
 			*outi = std::move(*pos2);
-			advance(pos2, 1);
+			pos2++;
 			if (state == 0x213) {	// 2 0x213
 				if (pos2 >= p2to) {
 					state = 0x13;
@@ -128,7 +128,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 		else {
 			// 4-5
 			*outi = std::move(*pos3);
-			advance(pos3, 1);
+			pos3++;
 			if (state == 0x312) {	// 4 0x312
 				if (pos3 >= p3to) {
 					state = 0x12;
@@ -155,13 +155,13 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 			}
 		}
 	}
-	advance(outi, 1);
+	outi++;
 
-	for (; outi < to; advance(outi, 1)) {
+	for (; outi < to; outi++) {
 		// 以下のif文のネストは、本来なら switch case で処理するべきだが、if のネストのほうが速かったので、このような書き方にしている。
 		if (state < 0x21) {
 			*outi = std::move(*pos1);
-			advance(pos1, 1);
+			pos1++;
 			if (state == 0x12) {	// 6 0x12
 				if (pos1 >= p1to) {
 					state = 0x2;
@@ -185,7 +185,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 		}
 		else if (state < 0x31) {
 			*outi = std::move(*pos2);
-			advance(pos2, 1);
+			pos2++;
 			if (state == 0x21) {	// 8 0x21
 				if (pos2 >= p2to) {
 					state = 0x1;
@@ -209,7 +209,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 		}
 		else {
 			*outi = std::move(*pos3);
-			advance(pos3, 1);
+			pos3++;
 			if (state == 0x31) {	// 10 0x31
 				if (pos3 >= p3to) {
 					state = 0x1;
@@ -232,7 +232,7 @@ template <class RAI, class PR> void masMerge(RAI pos1, RAI pos2, RAI pos3, RAI t
 			}
 		}
 	}
-	advance(outi, 1);
+	outi++;
 
 	if (state == 0x1) {
 		//System.arraycopy(workArray, pos1, array, idx, p1to - pos1);
