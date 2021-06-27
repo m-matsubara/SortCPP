@@ -1,5 +1,5 @@
 ifeq ($(OS),Windows_NT)
-  EXEEXT = .exe
+  EXEEXT=.exe
 endif
 
 all: Mas4Sort$(EXEEXT) Mas4Sort3rd$(EXEEXT) MasSort$(EXEEXT) MergeSort$(EXEEXT) MergeSortNR$(EXEEXT) mmSort$(EXEEXT) MmsSort$(EXEEXT) QuickSort$(EXEEXT) StdSort$(EXEEXT) StdStableSort$(EXEEXT)
