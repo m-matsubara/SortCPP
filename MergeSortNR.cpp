@@ -14,7 +14,7 @@
 #include "SortBenchmark.h"
 #include "SortBenchmarkSpec.h"
 
-class MasSortBenchmark : public SortBenchmark {
+class MergeSortNrBenchmark : public SortBenchmark {
 	inline void sort(std::vector<SortItem> &array) {
 		mmlib::mergeSortNR(array.begin(), array.end());
 	}
@@ -23,11 +23,10 @@ class MasSortBenchmark : public SortBenchmark {
 };
 
 
-int main()
+int main(int argc, char *argv[])
 {
-	MasSortBenchmark sortBenchmark;
-	sortBenchmark.benchmark(ARRAY_SIZE, ARRAY_TYPE, SORT_KEY_MODE, TIMES);
-
+	MergeSortNrBenchmark sortBenchmark;
+	sortBenchmark.main(argc, argv);
 	return 0;
 }
 
