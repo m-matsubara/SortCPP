@@ -1,34 +1,38 @@
-all: Mas4Sort.exe Mas4Sort3rd.exe MasSort.exe MergeSort.exe MergeSortNR.exe mmSort.exe MmsSort.exe QuickSort.exe StdSort.exe StdStableSort.exe
+ifeq ($(OS),Windows_NT)
+  EXEEXT = .exe
+endif
 
-Mas4Sort.exe: Mas4Sort.o Mas4Sort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o Mas4Sort.exe Mas4Sort.o SortBenchmark.o SortItem.o
+all: Mas4Sort$(EXEEXT) Mas4Sort3rd$(EXEEXT) MasSort$(EXEEXT) MergeSort$(EXEEXT) MergeSortNR$(EXEEXT) mmSort$(EXEEXT) MmsSort$(EXEEXT) QuickSort$(EXEEXT) StdSort$(EXEEXT) StdStableSort$(EXEEXT)
 
-Mas4Sort3rd.exe: Mas4Sort3rd.o Mas4Sort3rd.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o Mas4Sort3rd.exe Mas4Sort3rd.o SortBenchmark.o SortItem.o
+Mas4Sort$(EXEEXT): Mas4Sort.o Mas4Sort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o Mas4Sort$(EXEEXT) Mas4Sort.o SortBenchmark.o SortItem.o
 
-MasSort.exe: MasSort.o MasSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o MasSort.exe MasSort.o SortBenchmark.o SortItem.o
+Mas4Sort3rd$(EXEEXT): Mas4Sort3rd.o Mas4Sort3rd.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o Mas4Sort3rd$(EXEEXT) Mas4Sort3rd.o SortBenchmark.o SortItem.o
 
-MergeSort.exe: MergeSort.o MergeSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o MergeSort.exe MergeSort.o SortBenchmark.o SortItem.o
+MasSort$(EXEEXT): MasSort.o MasSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o MasSort$(EXEEXT) MasSort.o SortBenchmark.o SortItem.o
 
-MergeSortNR.exe: MergeSortNR.o MergeSortNR.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o MergeSortNR.exe MergeSortNR.o SortBenchmark.o SortItem.o
+MergeSort$(EXEEXT): MergeSort.o MergeSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o MergeSort$(EXEEXT) MergeSort.o SortBenchmark.o SortItem.o
 
-mmSort.exe: mmSort.o mmSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o mmSort.exe mmSort.o SortBenchmark.o SortItem.o
+MergeSortNR$(EXEEXT): MergeSortNR.o MergeSortNR.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o MergeSortNR$(EXEEXT) MergeSortNR.o SortBenchmark.o SortItem.o
 
-MmsSort.exe: MmsSort.o MmsSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o MmsSort.exe MmsSort.o SortBenchmark.o SortItem.o
+mmSort$(EXEEXT): mmSort.o mmSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o mmSort$(EXEEXT) mmSort.o SortBenchmark.o SortItem.o
 
-QuickSort.exe: QuickSort.o QuickSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o QuickSort.exe QuickSort.o SortBenchmark.o SortItem.o
+MmsSort$(EXEEXT): MmsSort.o MmsSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o MmsSort$(EXEEXT) MmsSort.o SortBenchmark.o SortItem.o
 
-StdSort.exe: StdSort.o SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o StdSort.exe StdSort.o SortBenchmark.o SortItem.o
+QuickSort$(EXEEXT): QuickSort.o QuickSort.h InsertionSort.h SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o QuickSort$(EXEEXT) QuickSort.o SortBenchmark.o SortItem.o
 
-StdStableSort.exe: StdStableSort.o SortBenchmarkSpec.h SortBenchmark.o SortItem.o
-	g++ -Wall -O3 -lstdc++ -o StdStableSort.exe StdStableSort.o SortBenchmark.o SortItem.o
+StdSort$(EXEEXT): StdSort.o SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o StdSort$(EXEEXT) StdSort.o SortBenchmark.o SortItem.o
+
+StdStableSort$(EXEEXT): StdStableSort.o SortBenchmarkSpec.h SortBenchmark.o SortItem.o
+	g++ -Wall -O3 -lstdc++ -o StdStableSort$(EXEEXT) StdStableSort.o SortBenchmark.o SortItem.o
 
 
 SortBenchmark.o: SortBenchmark.h SortBenchmarkSpec.h SortItem.h

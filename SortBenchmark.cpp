@@ -43,10 +43,10 @@ static void validateVector(std::vector<SortItem> &vec, bool stable)
 		}
 	}
 
-	unsigned __int64 sum = 0;
+	unsigned long long sum = 0;
 	for (size_t idx = 0; idx < range; idx++)
-		sum += from[idx].originalOrder;
-	size_t sum2 = (range - 1) * (range) / 2;
+		sum += (unsigned long long)from[idx].originalOrder;
+	unsigned long long sum2 = (unsigned long long)(range - 1) * (unsigned long long)(range) / 2;
 
 	if (sum2 != sum) {
 		throw std::string("sort error. (summary)");
