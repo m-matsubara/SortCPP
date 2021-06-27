@@ -24,11 +24,10 @@ class Mas4Sort3rdBenchmark : public SortBenchmark {
 };
 
 
-int main()
+int main(int argc, char *argv[])
 {
 	Mas4Sort3rdBenchmark sortBenchmark;
-	sortBenchmark.benchmark(ARRAY_SIZE, ARRAY_TYPE, SORT_KEY_MODE, TIMES);
-
+	sortBenchmark.main(argc, argv);
 	return 0;
 }
 

@@ -13,7 +13,7 @@
 #include "SortBenchmark.h"
 #include "SortBenchmarkSpec.h"
 
-class MmSortBenchmark : public SortBenchmark {
+class StdStableSortBenchmark : public SortBenchmark {
 	inline void sort(std::vector<SortItem> &array) {
 		std::stable_sort(array.begin(), array.end());
 	}
@@ -22,11 +22,10 @@ class MmSortBenchmark : public SortBenchmark {
 };
 
 
-int main()
+int main(int argc, char *argv[])
 {
-	MmSortBenchmark sortBenchmark;
-	sortBenchmark.benchmark(ARRAY_SIZE, ARRAY_TYPE, SORT_KEY_MODE, TIMES);
-
+	StdStableSortBenchmark sortBenchmark;
+	sortBenchmark.main(argc, argv);
 	return 0;
 }
 

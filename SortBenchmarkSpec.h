@@ -9,6 +9,8 @@
 
 enum class SortKeyType { INTEGER, STRING };
 
+// Array type 
+enum class ArrayType { ARRAY_TYPE_RANDOM, ARRAY_TYPE_UNIQUE_RANDOM, ARRAY_TYPE_HALF_SORTED, ARRAY_TYPE_ASC, ARRAY_TYPE_DESC, ARRAY_TYPE_FLAT };
 
 // Array size
 #define ARRAY_SIZE 10000000
@@ -17,9 +19,10 @@ enum class SortKeyType { INTEGER, STRING };
 #define TIMES 5
 
 // Initial state of array (random, ascending, descending ...)
-#define ARRAY_TYPE 0	// Still meaningless
+#define ARRAY_TYPE ArrayType::ARRAY_TYPE_RANDOM
 
 // Whether the sort key is an integer or a string
+#define SORT_KEY_TYPE SortKeyType::INTEGER
 #define SORT_KEY_MODE SortKeyType::INTEGER
 
 // Whether to count the number of calls to the copy constructor / move constructor

@@ -56,31 +56,79 @@ static void validateVector(std::vector<SortItem> &vec, bool stable)
 	SortItem::compareCount = bkCompareCount;
 }
 
-void SortBenchmark::benchmark(size_t arraySize, int arrayType, SortKeyType keyType, size_t times)
+void  SortBenchmark::initializeArray(std::vector<SortItem> &array, ArrayType arrayType)
+{
+	size_t arraySize = array.end() - array.begin();
+	std::mt19937 rnd;
+
+	if (arrayType == ArrayType::ARRAY_TYPE_RANDOM) {
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			array[idx].key = (int)(idx / 10);
+		}
+
+		std::uniform_int_distribution<> randArraySize(0, (int)arraySize - 1);
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			int swapIdx = randArraySize(rnd);
+
+			auto work = array[idx].key;
+			array[idx].key = array[swapIdx].key;
+			array[swapIdx].key = work;
+		}
+	} else if (arrayType == ArrayType::ARRAY_TYPE_UNIQUE_RANDOM) {
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			array[idx].key = (int)idx;
+		}
+
+		std::uniform_int_distribution<> randArraySize(0, (int)arraySize - 1);
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			int swapIdx = randArraySize(rnd);
+
+			auto work = array[idx].key;
+			array[idx].key = array[swapIdx].key;
+			array[swapIdx].key = work;
+		}
+	} else if (arrayType == ArrayType::ARRAY_TYPE_HALF_SORTED) {
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			array[idx].key = (int)idx;
+		}
+
+		size_t randomRange = arraySize / 2;
+		std::uniform_int_distribution<> randArraySize(0, (int)randomRange - 1);
+		for (size_t idx = 0; idx < randomRange; idx++) {
+			int swapIdx = randArraySize(rnd);
+
+			auto work = array[idx].key;
+			array[idx].key = array[swapIdx].key;
+			array[swapIdx].key = work;
+		}
+	} else if (arrayType == ArrayType::ARRAY_TYPE_ASC) {
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			array[idx].key = (int)idx;
+		}
+	} else if (arrayType == ArrayType::ARRAY_TYPE_DESC) {
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			array[idx].key = (int)(arraySize - idx);
+		}
+	} else if (arrayType == ArrayType::ARRAY_TYPE_FLAT) {
+		for (size_t idx = 0; idx < arraySize; idx++) {
+			array[idx].key = 0;
+		}
+	}
+}
+
+
+void SortBenchmark::benchmark(size_t arraySize, ArrayType arrayType, SortKeyType keyType, size_t times)
 {
 	using namespace std;
 	using std::cout;
 	using std::endl;
 	using std::cin;
 
-	std::mt19937 rnd;
 	std::vector<SortItem> vecSortItem(arraySize);
 
 	try {
 		for (size_t timeIdx = 1; timeIdx <= times; timeIdx++) {
-			for (size_t idx = 0; idx < arraySize; idx++) {
-				vecSortItem[idx].key = (int)(idx / 10);
-			}
-
-			std::uniform_int_distribution<> randArraySize(0, (int)arraySize - 1);
-			for (size_t idx = 0; idx < arraySize; idx++) {
-				int swapIdx = randArraySize(rnd);
-				//				std::swap(vecSortItem[idx], vecSortItem[swapIdx]);
-
-				auto work = vecSortItem[idx].key;
-				vecSortItem[idx].key = vecSortItem[swapIdx].key;
-				vecSortItem[swapIdx].key = work;
-			}
+			initializeArray(vecSortItem, arrayType);
 
 			string sortKeyTypeStr = "Integer";
 			if (keyType == SortKeyType::STRING) {
@@ -103,24 +151,38 @@ void SortBenchmark::benchmark(size_t arraySize, int arrayType, SortKeyType keyTy
 			SortItem::moveConstructorCount = 0;
 			SortItem::copyOperatorCount = 0;
 			SortItem::moveOperatorCount = 0;
-			auto startTime = std::chrono::system_clock::now();      // 計測スタート時刻を保存
+			auto startTime = std::chrono::system_clock::now();      // 計測開始時刻を保存
 
 			sort(vecSortItem);
 
-			auto endTime = std::chrono::system_clock::now();      // 計測スタート時刻を保存
+			auto endTime = std::chrono::system_clock::now();      // 計測終了時刻を保存
 			auto dur = endTime - startTime;        // 要した時間を計算
 			auto microSec = std::chrono::duration_cast<std::chrono::microseconds>(dur).count();
 
-			std::string stable = isStable() ? "stable" : "unstable";
+			std::string stableStr = isStable() ? "stable" : "unstable";
+			std::string arrayTypeStr = "";
+			if (arrayType == ArrayType::ARRAY_TYPE_RANDOM) {
+				arrayTypeStr = "Random";
+			} else if (arrayType == ArrayType::ARRAY_TYPE_UNIQUE_RANDOM) {
+				arrayTypeStr = "Unique random";
+			} else if (arrayType == ArrayType::ARRAY_TYPE_HALF_SORTED) {
+				arrayTypeStr = "Half sorted";
+			} else if (arrayType == ArrayType::ARRAY_TYPE_ASC) {
+				arrayTypeStr = "Ascending";
+			} else if (arrayType == ArrayType::ARRAY_TYPE_DESC) {
+				arrayTypeStr = "Descending";
+			} else if (arrayType == ArrayType::ARRAY_TYPE_FLAT) {
+				arrayTypeStr = "Flat";
+			}
 
 #ifdef CUSTOM_CONSTRUCTOR
-			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << "Random" << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stable 
+			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << arrayTypeStr << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stableStr 
 				<< "\t" << SortItem::constructorCount
 				<< "\t" << SortItem::moveConstructorCount + SortItem::moveOperatorCount << "\t" << SortItem::moveConstructorCount << "\t" << SortItem::moveOperatorCount
 				<< "\t" << SortItem::copyConstructorCount + SortItem::copyOperatorCount << "\t" << SortItem::copyConstructorCount << "\t" << SortItem::copyOperatorCount
 				<< endl;
 #else
-			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << "Random" << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stable 
+			cout << "C++" << "\t" << timeIdx << "\t" << getAlgorithmName() << "\t" << arrayTypeStr << "\t" << sortKeyTypeStr << "\t" << arraySize << "\t" << microSec / 1000000.0 << "\t" << SortItem::compareCount << "\t" << stableStr 
 				<< endl;
 #endif
 			//validateVector(vecSortItem.begin(), vecSortItem.end());
@@ -132,3 +194,41 @@ void SortBenchmark::benchmark(size_t arraySize, int arrayType, SortKeyType keyTy
 	}
 }
 
+int SortBenchmark::main(int argc, char *argv[])
+{
+	size_t arraySize = ARRAY_SIZE;
+	ArrayType arrayType = ARRAY_TYPE;
+	SortKeyType sortKeyType = SORT_KEY_TYPE;
+	size_t times = TIMES;
+	if (argc >= 2 && *argv[1]) {
+		arraySize = atoi(argv[1]);
+	}
+	if (argc >= 3 && *argv[2]) {
+		if (argv[2][0] == 'U') {
+			arrayType = ArrayType::ARRAY_TYPE_UNIQUE_RANDOM;
+		} else if (argv[2][0] == 'R') {
+			arrayType = ArrayType::ARRAY_TYPE_RANDOM;
+		} else if (argv[2][0] == 'H') {
+			arrayType = ArrayType::ARRAY_TYPE_HALF_SORTED;
+		} else if (argv[2][0] == 'A') {
+			arrayType = ArrayType::ARRAY_TYPE_ASC;
+		} else if (argv[2][0] == 'D') {
+			arrayType = ArrayType::ARRAY_TYPE_DESC;
+		} else if (argv[2][0] == 'F') {
+			arrayType = ArrayType::ARRAY_TYPE_DESC;
+		}
+	}
+	if (argc >= 4 && *argv[3]) {
+		if (argv[3][0] == 'I') {
+			sortKeyType = SortKeyType::INTEGER;
+		} else if (argv[3][0] == 'S') {
+			sortKeyType = SortKeyType::STRING;
+		}
+	}
+	if (argc >= 5 && *argv[4]) {
+		times = atoi(argv[4]);
+	}
+	benchmark(arraySize, arrayType, sortKeyType, times);
+
+	return 0;
+}

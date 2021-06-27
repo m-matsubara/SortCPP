@@ -19,5 +19,7 @@ public:
 	virtual std::string getAlgorithmName(void) = 0;
 	virtual bool isStable(void) = 0;
 
-	void benchmark(size_t arraySize, int arrayType, SortKeyType keyType, size_t times);
+	void initializeArray(std::vector<SortItem> &array, ArrayType arrayType);
+	void benchmark(size_t arraySize, ArrayType arrayType, SortKeyType keyType, size_t times);
+	int main(int argc, char *argv[]);
 };
